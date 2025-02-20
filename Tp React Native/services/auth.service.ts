@@ -7,3 +7,4 @@ export const signin = (
 ):Promise<UserCredential> => {
     return signInWithEmailAndPassword(auth,email,password)
 }
+
