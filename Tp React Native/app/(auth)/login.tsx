@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import {router} from 'expo-router'
 import { View, StyleSheet, Alert } from "react-native";
 import { TextInput, IconButton,Button as Bt } from "react-native-paper";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -8,6 +7,7 @@ import { Link, useRouter } from "expo-router";
 import Button from "@/components/ui/Button";
 
 const LoginScreen = () => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [secureText, setSecureText] = useState(true);

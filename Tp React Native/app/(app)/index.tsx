@@ -11,7 +11,6 @@ export default function Index() {
   const goTodashboard = () => {
     router.replace("/dashboard");
   }
-  console.log(user);
 
   if (!user)
     return <Redirect href="/login" />

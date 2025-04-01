@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "TP4",
-    "slug": "TP4",
+    "slug": "ticketapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.goyef.ticketapp"
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +37,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "4968711b-731b-4dd0-b195-aa9dd7cf6a94"
+      }
+    },
+    "owner": "goyef"
   }
 }

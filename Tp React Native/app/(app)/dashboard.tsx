@@ -10,7 +10,9 @@ export default function Dashboard() {
     router.replace("/(app)");
   }
 
-  
+  const goToTicketsIndex= () => {
+    router.replace("/tickets");
+  }
 
   const signOut = () => {
     const auth = getAuth();
@@ -26,7 +28,8 @@ export default function Dashboard() {
           Se déconnecter
         </Text>
       </Pressable>
-      <Button label=" il est quoi l'index" onPress={goToIndex}/>
+      <Button theme="secondary" label=" il est où l'index" onPress={goToIndex} />
+      <Button label="Liste de tickets" onPress={goToTicketsIndex} />
     </View>
   );
 }
