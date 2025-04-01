@@ -40,8 +40,7 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Button label=" il est quoi" onPress={goTodashboard}/>
-      <Button label="Register que les petits"theme="primary" onPress={goToRegister}/>
+      <Button label="Inscription"theme="primary" onPress={goToRegister}/>
       <TextInput
         label="Adresse e-mail"
         value={email}
@@ -100,6 +99,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 20,
+    backgroundColor: "#0b03fc",
   },
 });
 

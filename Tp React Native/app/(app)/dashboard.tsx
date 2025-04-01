@@ -6,8 +6,8 @@ import Button from '@/components/ui/Button';
 
 export default function Dashboard() {
   const router = useRouter();
-  const goToIndex = () => {
-    router.replace("/(app)");
+  const goToProfile = () => {
+    router.replace("/profile");
   }
 
   const goToTicketsIndex= () => {
@@ -28,7 +28,7 @@ export default function Dashboard() {
           Se déconnecter
         </Text>
       </Pressable>
-      <Button theme="secondary" label=" il est où l'index" onPress={goToIndex} />
+      <Button theme="secondary" label="Profile" onPress={goToProfile} />
       <Button label="Liste de tickets" onPress={goToTicketsIndex} />
     </View>
   );
