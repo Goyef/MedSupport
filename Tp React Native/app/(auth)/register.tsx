@@ -22,7 +22,7 @@ const  RegisterScreen = () => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       Alert.alert("Succès", "Inscription réussie !");
-      router.replace("/dashboard"); 
+      router.replace("/(app)"); 
     } catch (error: any) {
       Alert.alert("Erreur", error.message);
     }

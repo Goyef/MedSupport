@@ -106,9 +106,7 @@ const TicketList: React.FC<TicketListProps> = ({
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Tickets</Text>
-      </View>
+ 
 
       <FlatList
         data={tickets}

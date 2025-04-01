@@ -1,7 +1,8 @@
 import { db } from "@/config/firebase";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import { collection, getDocs, addDoc, updateDoc, doc,getDoc } from "firebase/firestore";
 
 export interface Ticket {
+  idTicket? : string;
   name: string;
   status: string;
   priority: string;
@@ -27,6 +28,29 @@ const getAllTickets = async (): Promise<Ticket[]> => {
     ...(doc.data() as Ticket),
   }));
 };
+
+const getDetailTicket = async (idTicket: string) => {
+  try {
+    if (!idTicket || typeof idTicket !== "string") {
+      throw new Error("ID du ticket invalide.");
+    }
+
+    const ticketRef = doc(db, "Tickets", idTicket);
+    const docSnap = await getDoc(ticketRef);
+
+    if (!docSnap.exists()) {
+      console.log(`Aucun ticket trouvé pour l'ID : ${idTicket}`);
+      return null;
+    }
+
+    return docSnap.data();
+  } catch (error) {
+    console.log("Erreur lors de la récupération du ticket :", error);
+    return null;
+  }
+};
+
+
 const createTicket = async ({
   nameTicket,
   priorityTicket,
@@ -37,7 +61,7 @@ const createTicket = async ({
   statusTicket: string;
 }): Promise<Ticket> => {
   const ticketsCollection = collection(db, "Tickets");
-  const docRef = await addDoc(ticketsCollection, {
+   await addDoc(ticketsCollection, {
     name: nameTicket,
     priority: priorityTicket,
     status: statusTicket,
@@ -49,5 +73,29 @@ const createTicket = async ({
   };
 };
 
-export { getAllTickets, getTicketsDB, createTicket };
+const editTicket = async ({
+  idTicket,
+  nameTicket,
+  priorityTicket,
+  statusTicket,
+}: {
+  idTicket : string;
+  nameTicket: string;
+  priorityTicket: string;
+  statusTicket: string;
+}): Promise<Ticket> => {
+  const ticketRef = doc(db, "Tickets",idTicket);
+await updateDoc(ticketRef, {
+    name: nameTicket,
+    priority: priorityTicket,
+    status: statusTicket,
+  });
+  return {
+    name: nameTicket,
+    priority: priorityTicket,
+    status: statusTicket,
+  };
+};
+
+export { getAllTickets, getTicketsDB, createTicket, editTicket, getDetailTicket };
 

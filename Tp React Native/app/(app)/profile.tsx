@@ -7,19 +7,18 @@ import Button from '@/components/ui/Button';
 export default function Profile() {
   const router = useRouter();
   const goToDashboard = () => {
-    router.replace("/dashboard");
+    router.replace("/(app)");
   }
 
   const goToTicketsIndex= () => {
     router.replace("/tickets");
   }
-
-  
+const {user , loading} = useAuth()
   
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Profile Screen</Text>
+      <Text style={styles.text}> Bonjour {user?.email}</Text>
       <Button theme="secondary" label="Dashboard" onPress={goToDashboard} />
       <Button label="Liste de tickets" onPress={goToTicketsIndex} />
     </View>

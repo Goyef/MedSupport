@@ -1,6 +1,6 @@
-import { AuthProvider, useAuth } from "@/context/ctx";
-import { Stack } from "expo-router/stack";
 import { StatusBar } from 'expo-status-bar';
+import { AuthProvider } from '@/context/ctx';
+import { Stack } from 'expo-router';
 
 export default function RootLayout() {
   return (

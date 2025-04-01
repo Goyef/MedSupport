@@ -1,19 +1,18 @@
 import { Text, View, StyleSheet, Pressable } from 'react-native';
- import { Link, Redirect, useRootNavigationState, useRouter } from 'expo-router'; 
+ import { Link, Redirect, useRouter } from 'expo-router'; 
 import { useAuth } from '@/context/ctx';
 import { getAuth } from 'firebase/auth';
 import Button from '@/components/ui/Button';
 
-export default function Index() {
-  const { user, loading } = useAuth();
+export default function Dashboard() {
   const router = useRouter();
-
-  const goTodashboard = () => {
-    router.replace("/dashboard");
+  const goToProfile = () => {
+    router.replace("/profile");
   }
 
-  if (!user)
-    return <Redirect href="/login" />
+  const goToTicketsIndex= () => {
+    router.replace("/tickets");
+  }
 
   const signOut = () => {
     const auth = getAuth();
@@ -23,16 +22,14 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>index Screen</Text>
-      <Link href="/login" style={styles.button}>
-       C'est mon index ouuuuuu
-      </Link>
+      <Text style={styles.text}>Dashboard Screen</Text>
       <Pressable onPress={signOut}>
         <Text style={{color:'#fff'}}>
           Se déconnecter
         </Text>
       </Pressable>
-        <Button label="go dashboard" onPress={goTodashboard}/>
+      <Button theme="secondary" label="Profile" onPress={goToProfile} />
+      <Button label="Liste de tickets" onPress={goToTicketsIndex} />
     </View>
   );
 }
