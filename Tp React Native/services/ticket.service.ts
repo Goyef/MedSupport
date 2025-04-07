@@ -1,5 +1,5 @@
 import { db } from "@/config/firebase";
-import { collection, getDocs, addDoc, updateDoc, doc,getDoc } from "firebase/firestore";
+import { collection, getDocs, addDoc, updateDoc, doc,getDoc, deleteDoc } from "firebase/firestore";
 
 export interface Ticket {
   idTicket? : string;
@@ -7,6 +7,18 @@ export interface Ticket {
   status: string;
   priority: string;
 }
+const getAllTickets = async (): Promise<Ticket[]> => {
+  const ticketsCollection = collection(db, "Tickets");
+  const snapshot = await getDocs(ticketsCollection);
+
+  console.log("Raw snapshot:", snapshot.docs.map(doc => doc.data()));
+
+  return snapshot.docs.map((doc) => ({
+    idTicket: doc.id,
+    ...(doc.data() as Ticket),
+  }));
+};
+
 
 async function getTicketsDB() {
   console.log("Getting tickets from DB");
@@ -17,17 +29,6 @@ async function getTicketsDB() {
   });
 }
 
-const getAllTickets = async (): Promise<Ticket[]> => {
-  const ticketsCollection = collection(db, "Tickets");
-  const snapshot = await getDocs(ticketsCollection);
-
-  console.log("Raw snapshot:", snapshot.docs.map(doc => doc.data()));
-
-  return snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...(doc.data() as Ticket),
-  }));
-};
 
 const getDetailTicket = async (idTicket: string) => {
   try {
@@ -73,29 +74,40 @@ const createTicket = async ({
   };
 };
 
-const editTicket = async ({
-  idTicket,
-  nameTicket,
-  priorityTicket,
-  statusTicket,
-}: {
-  idTicket : string;
-  nameTicket: string;
-  priorityTicket: string;
-  statusTicket: string;
-}): Promise<Ticket> => {
-  const ticketRef = doc(db, "Tickets",idTicket);
-await updateDoc(ticketRef, {
-    name: nameTicket,
-    priority: priorityTicket,
-    status: statusTicket,
-  });
-  return {
-    name: nameTicket,
-    priority: priorityTicket,
-    status: statusTicket,
-  };
+
+
+const deleteTicket = async (idTicket:string) : Promise<boolean> => {
+  try {
+    console.log(idTicket)
+
+    await deleteDoc(doc(db, "Tickets", idTicket));
+    return true;
+  } catch (error) {
+    console.error("Erreur lors de la suppression :", error);
+    return false;
+  }
 };
 
-export { getAllTickets, getTicketsDB, createTicket, editTicket, getDetailTicket };
+ const updateTicket = async ({
+  idTicket,
+  nameTicket,
+  statusTicket,
+  priorityTicket,
+}: {
+  idTicket: string;
+  nameTicket: string;
+  statusTicket: string;
+  priorityTicket: string;
+}) => {
+  const ticketRef = doc(db, "Tickets", idTicket);
+
+  await updateDoc(ticketRef, {
+    name: nameTicket,  
+    status: statusTicket, 
+    priority: priorityTicket,
+  });
+};
+
+
+export { getAllTickets, getTicketsDB, createTicket, getDetailTicket,deleteTicket,updateTicket };
 

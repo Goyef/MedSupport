@@ -29,7 +29,6 @@ export default function Dashboard() {
         </Text>
       </Pressable>
       <Button theme="secondary" label="Profile" onPress={goToProfile} />
-      <Button label="Liste de tickets" onPress={goToTicketsIndex} />
     </View>
   );
 }

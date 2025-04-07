@@ -8,21 +8,21 @@ import {
   StatusBar,
 } from "react-native";
 
-// Interface for the Ticket as provided
+
 interface Ticket {
   name: string;
   status: string;
   priority: string;
 }
 
-// Props interface for the TicketList component
+
 interface TicketListProps {
   tickets: Ticket[];
   onTicketPress?: (ticket: Ticket) => void;
   onAddTicket?: () => void;
 }
 
-// Mock data (you mentioned you'll handle data fetching)
+
 const mockTickets: Ticket[] = [
   { name: "Fix login screen bug", status: "Open", priority: "High" },
   {

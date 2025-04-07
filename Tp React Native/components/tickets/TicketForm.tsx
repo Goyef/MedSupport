@@ -1,5 +1,5 @@
 import { Ticket } from "@/services/ticket.service";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   View,
@@ -19,20 +19,29 @@ interface AddTicketFormProps {
   visible: boolean;
   onClose: () => void;
   onSave: (ticket: Ticket) => void;
+  initialTicket?: Ticket;
 }
 
 const AddTicketForm: React.FC<AddTicketFormProps> = ({
   visible,
   onClose,
   onSave,
+  initialTicket,
 }) => {
   // État initial du ticket
-  const [ticket, setTicket] = useState<Ticket>({
+  const [ticket, setTicket] = useState<Ticket>
+   ({
+    idTicket: "",
     name: "",
-    status: "Open", // Valeur par défaut
-    priority: "Medium", // Valeur par défaut
+    status: "Open",
+    priority: "Medium", 
   });
 
+  useEffect(() => {
+    if (initialTicket) {
+      setTicket(initialTicket);
+    }
+  }, [initialTicket]);
   // Options disponibles
   const statusOptions = ["Open", "In Progress", "Closed"];
   const priorityOptions = ["High", "Medium", "Low"];
@@ -56,6 +65,7 @@ const AddTicketForm: React.FC<AddTicketFormProps> = ({
       onSave(ticket);
       // Réinitialiser le formulaire
       setTicket({
+        idTicket:"",
         name: "",
         status: "Open",
         priority: "Medium",

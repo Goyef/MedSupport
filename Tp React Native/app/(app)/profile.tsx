@@ -20,7 +20,6 @@ const {user , loading} = useAuth()
     <View style={styles.container}>
       <Text style={styles.text}> Bonjour {user?.email}</Text>
       <Button theme="secondary" label="Dashboard" onPress={goToDashboard} />
-      <Button label="Liste de tickets" onPress={goToTicketsIndex} />
     </View>
   );
 }

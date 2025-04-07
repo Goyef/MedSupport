@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Alert } from "react-native";
 import { TextInput, IconButton,Button as Bt } from "react-native-paper";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { sendEmailVerification, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/config/firebase";
 import { Link, useRouter } from "expo-router";
 import Button from "@/components/ui/Button";
@@ -27,6 +27,15 @@ const LoginScreen = () => {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      // if (auth.currentUser && !auth.currentUser.emailVerified) {
+      //   sendEmailVerification(auth.currentUser)
+      //     .then(() => {
+      //       Alert.alert("E-mail de vérification envoyé !");
+      //     })
+      //     .catch((error) => {
+      //       Alert.alert("Erreur lors de l'envoi de l'e-mail de vérification :", error);
+      //     });
+      // }
       Alert.alert("Succès", "Connexion réussie !");
       router.replace("/(app)")
       // Redirection ou mise à jour de l'état après connexion

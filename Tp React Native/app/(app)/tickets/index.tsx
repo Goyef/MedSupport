@@ -5,36 +5,39 @@ import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 
 const Tickets = () => {
-  const router = useRouter()
+  const router = useRouter();
   const ticketsData: Ticket[] = [];
   const [yourTicketsData, setYourTicketsData] = useState<Ticket[]>(ticketsData);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+
   const getTickets = async () => {
     const tickets = await getAllTickets();
-
-    //getTicketsDB();
     setYourTicketsData(tickets);
   };
+
   useEffect(() => {
-    
-    getTickets();
+    getTickets(); 
   }, []);
 
-  const handleTicketPress = (ticket: Ticket) => {
+  const handleTicketPress = async (ticket: Ticket) => {
     console.log("Ticket pressed:", ticket);
-    router.push(`/tickets/${ticket.idTicket?.toString()}?idTicket=${ticket.idTicket?.toString()}`)
-  }
+    getTickets();  
 
-  const handleAddTicketList = () => {
-    console.log("Add ticket button pressed");
-    setIsModalVisible(true);
-  };
-  
-  const handleAddTicket = async (ticket:Ticket) => {
-    await createTicket({nameTicket : ticket.name, priorityTicket : ticket.priority, statusTicket : ticket.status})
+    router.push(`/tickets/${ticket.idTicket?.toString()}`);
     getTickets()
   };
 
+  const handleAddTicketList = () => {
+    getTickets()
+    console.log("Add ticket button pressed");
+    setIsModalVisible(true);
+  };
+
+  const handleAddTicket = async (ticket: Ticket) => {
+    await createTicket({ nameTicket: ticket.name, priorityTicket: ticket.priority, statusTicket: ticket.status });
+    getTickets();
+    setIsModalVisible(false)
+  };
 
   const onModalClose = () => {
     setIsModalVisible(false);
@@ -43,7 +46,7 @@ const Tickets = () => {
   return (
     <>
       <TicketList
-        tickets={yourTicketsData} 
+        tickets={yourTicketsData}
         onTicketPress={handleTicketPress}
         onAddTicket={handleAddTicketList}
       />
