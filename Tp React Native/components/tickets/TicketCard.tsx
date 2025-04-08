@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   StatusBar,
+  ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 
 
@@ -20,20 +22,8 @@ interface TicketListProps {
   tickets: Ticket[];
   onTicketPress?: (ticket: Ticket) => void;
   onAddTicket?: () => void;
+  onTicketRefresh?: () => void;
 }
-
-
-const mockTickets: Ticket[] = [
-  { name: "Fix login screen bug", status: "Open", priority: "High" },
-  {
-    name: "Update user profile page",
-    status: "In Progress",
-    priority: "Medium",
-  },
-  { name: "Implement dark mode", status: "Open", priority: "Low" },
-  { name: "Add payment integration", status: "Closed", priority: "High" },
-  { name: "Optimize image loading", status: "In Progress", priority: "Medium" },
-];
 
 // Helper function to get color based on priority
 const getPriorityColor = (priority: string): string => {
@@ -64,10 +54,24 @@ const getStatusColor = (status: string): string => {
 };
 
 const TicketList: React.FC<TicketListProps> = ({
-  tickets = mockTickets,
+  tickets,
   onTicketPress,
   onAddTicket,
+  onTicketRefresh,
 }) => {
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    if (onTicketRefresh) {
+      onTicketRefresh();
+    }
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }
+  
   const renderTicketItem = ({ item }: { item: Ticket }) => {
     return (
       <TouchableOpacity
@@ -107,14 +111,23 @@ const TicketList: React.FC<TicketListProps> = ({
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
  
-
+     
+    <View style={styles.flatListView}>
       <FlatList
         data={tickets}
         renderItem={renderTicketItem}
         keyExtractor={(item, index) => `ticket-${index}`}
         contentContainerStyle={styles.listContent}
+        ListEmptyComponent={() => (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#2196F3" />
+          </View>
+        )}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
       />
-
+  </View>
       {/* Floating Add Button */}
       <TouchableOpacity
         style={styles.floatingButton}
@@ -218,6 +231,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
     textAlign: "center",
+  },
+   flatListView: {
+    flex: 1, 
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

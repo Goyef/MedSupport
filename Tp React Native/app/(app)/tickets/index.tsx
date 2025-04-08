@@ -3,12 +3,16 @@ import TicketList from "@/components/tickets/TicketCard";
 import { createTicket, getAllTickets, Ticket } from "@/services/ticket.service";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
+import { Button, RefreshControl, SafeAreaView, ScrollView } from "react-native";
+import React from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const Tickets = () => {
   const router = useRouter();
   const ticketsData: Ticket[] = [];
   const [yourTicketsData, setYourTicketsData] = useState<Ticket[]>(ticketsData);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = React.useState(false);
 
   const getTickets = async () => {
     const tickets = await getAllTickets();
@@ -19,17 +23,18 @@ const Tickets = () => {
     getTickets(); 
   }, []);
 
-  const handleTicketPress = async (ticket: Ticket) => {
-    console.log("Ticket pressed:", ticket);
-    getTickets();  
+  const onRefresh = React.useCallback(async() => {
+    setRefreshing(true);
+    await getTickets();
+    setRefreshing(false);
+  }, []);
 
+  const handleTicketPress = async (ticket: Ticket) => {
+    getTickets();  
     router.push(`/tickets/${ticket.idTicket?.toString()}`);
-    getTickets()
   };
 
   const handleAddTicketList = () => {
-    getTickets()
-    console.log("Add ticket button pressed");
     setIsModalVisible(true);
   };
 
@@ -44,19 +49,19 @@ const Tickets = () => {
   };
 
   return (
-    <>
-      <TicketList
-        tickets={yourTicketsData}
-        onTicketPress={handleTicketPress}
-        onAddTicket={handleAddTicketList}
-      />
+    
+      <><TicketList
+      tickets={yourTicketsData}
+      onTicketRefresh={getTickets}
+      onTicketPress={handleTicketPress}
+      onAddTicket={handleAddTicketList} />
       <AddTicketForm
         visible={isModalVisible}
         onClose={onModalClose}
-        onSave={handleAddTicket}
-      />
-    </>
+        onSave={handleAddTicket} /></>
+    
   );
 };
+
 
 export default Tickets;

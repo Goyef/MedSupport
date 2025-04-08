@@ -41,7 +41,7 @@ const TicketDetails = ({ refreshTickets }: { refreshTickets: () => void }) => {
       [
         { text: "Annuler", style: "cancel" },
         {
-          text: "Modifier",
+          text: "Enregistrer",
           style: "destructive",
           onPress: async () => {
   

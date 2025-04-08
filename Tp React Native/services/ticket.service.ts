@@ -51,7 +51,7 @@ const getDetailTicket = async (idTicket: string) => {
   }
 };
 
-
+//Création de tickets
 const createTicket = async ({
   nameTicket,
   priorityTicket,

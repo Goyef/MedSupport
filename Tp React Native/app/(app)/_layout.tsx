@@ -49,7 +49,7 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="tickets/index"
+                name="tickets"
                 options={{
                     title: "Tickets",
                     tabBarIcon: ({ color, focused }) => (
@@ -57,15 +57,7 @@ export default function TabLayout() {
                     ),
                 }}
             />
-            <Tabs.Screen
-                name="tickets/[id]"
-                options={{
-                    title: "Ticket choisi",
-                    tabBarIcon: ({ color, focused }) => (
-                        <Ionicons name="ticket-outline" color={color} size={24} />
-                    ),
-                }}
-            />
+      
         </Tabs>
     );
 }
