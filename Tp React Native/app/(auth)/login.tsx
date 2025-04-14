@@ -27,15 +27,7 @@ const LoginScreen = () => {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // if (auth.currentUser && !auth.currentUser.emailVerified) {
-      //   sendEmailVerification(auth.currentUser)
-      //     .then(() => {
-      //       Alert.alert("E-mail de vérification envoyé !");
-      //     })
-      //     .catch((error) => {
-      //       Alert.alert("Erreur lors de l'envoi de l'e-mail de vérification :", error);
-      //     });
-      // }
+
       Alert.alert("Succès", "Connexion réussie !");
       router.replace("/(app)")
       // Redirection ou mise à jour de l'état après connexion

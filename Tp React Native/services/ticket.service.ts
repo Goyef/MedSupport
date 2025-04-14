@@ -1,21 +1,17 @@
 import { db } from "@/config/firebase";
-import { collection, getDocs, addDoc, updateDoc, doc,getDoc, deleteDoc } from "firebase/firestore";
+import { TicketFirst, TicketTrue } from "@/types/ticket";
+import { collection, getDocs, addDoc, updateDoc, doc,getDoc, deleteDoc, Timestamp } from "firebase/firestore";
 
-export interface Ticket {
-  idTicket? : string;
-  name: string;
-  status: string;
-  priority: string;
-}
-const getAllTickets = async (): Promise<Ticket[]> => {
+
+const getAllTickets = async (): Promise<TicketFirst[]> => {
   const ticketsCollection = collection(db, "Tickets");
   const snapshot = await getDocs(ticketsCollection);
 
   console.log("Raw snapshot:", snapshot.docs.map(doc => doc.data()));
 
   return snapshot.docs.map((doc) => ({
-    idTicket: doc.id,
-    ...(doc.data() as Ticket),
+    id: doc.id,
+    ...(doc.data() as TicketFirst),
   }));
 };
 
@@ -52,26 +48,37 @@ const getDetailTicket = async (idTicket: string) => {
 };
 
 //Création de tickets
-const createTicket = async ({
-  nameTicket,
-  priorityTicket,
-  statusTicket,
-}: {
-  nameTicket: string;
-  priorityTicket: string;
-  statusTicket: string;
-}): Promise<Ticket> => {
+const createTicket = async (ticket: TicketFirst): Promise<TicketTrue | null> => {
+  try {
   const ticketsCollection = collection(db, "Tickets");
+  if (!ticket.createdBy || typeof ticket.createdBy !== 'string') {
+    throw new Error("une erreur sur l'utilisateur");
+  }
+  const userRef = doc(db, "Users", ticket.createdBy);
    await addDoc(ticketsCollection, {
-    name: nameTicket,
-    priority: priorityTicket,
-    status: statusTicket,
+    title: ticket.title,
+    description: ticket.description,
+    status: ticket.status,
+    priority: ticket.priority,
+    category: ticket.category,
+    createdBy: userRef,
+    createdAt: Timestamp.fromDate(new Date()),
+    updatedAt: Timestamp.fromDate(new Date()),
   });
   return {
-    name: nameTicket,
-    priority: priorityTicket,
-    status: statusTicket,
-  };
+    title: ticket.title,
+    description: ticket.description,
+    status: ticket.status,
+    priority: ticket.priority,
+    category: ticket.category,
+    createdBy: userRef,
+    createdAt: Timestamp.fromDate(new Date()),
+    updatedAt: Timestamp.fromDate(new Date()),
+  };}
+  catch (error) {
+    console.error("Error creating ticket:", error);
+    return null; 
+  }
 };
 
 

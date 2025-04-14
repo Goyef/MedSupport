@@ -1,3 +1,4 @@
+import { TicketFirst } from "@/types/ticket";
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -11,16 +12,10 @@ import {
 } from "react-native";
 
 
-interface Ticket {
-  name: string;
-  status: string;
-  priority: string;
-}
-
 
 interface TicketListProps {
-  tickets: Ticket[];
-  onTicketPress?: (ticket: Ticket) => void;
+  tickets: TicketFirst[];
+  onTicketPress?: (ticket: TicketFirst) => void;
   onAddTicket?: () => void;
   onTicketRefresh?: () => void;
 }
@@ -44,7 +39,7 @@ const getStatusColor = (status: string): string => {
   switch (status.toLowerCase()) {
     case "open":
       return "#2196F3";
-    case "in progress":
+    case "in-progress":
       return "#FF9800";
     case "closed":
       return "#9E9E9E";
@@ -59,27 +54,72 @@ const TicketList: React.FC<TicketListProps> = ({
   onAddTicket,
   onTicketRefresh,
 }) => {
-
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [paginatedTickets, setPaginatedTickets] = useState<TicketFirst[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const itemsPerPage = 4;
+
+  useEffect(() => {
+    paginateData();
+  }, [tickets, currentPage]);
+
+  const paginateData = () => {
+    const start = currentPage * itemsPerPage;
+    const end = start + itemsPerPage;
+    setPaginatedTickets(tickets.slice(start, end));
+    setTotalPages(Math.ceil(tickets.length / itemsPerPage));
+  };
+
+  const handlePageClick = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const renderPaginationButtons = () => {
+    const maxButtonsToShow = 5;
+    let startPage = Math.max(0, currentPage - Math.floor(maxButtonsToShow / 2));
+    let endPage = Math.min(totalPages - 1, startPage + maxButtonsToShow - 1);
+  
+    if (endPage - startPage + 1 < maxButtonsToShow) {
+      startPage = Math.max(0, endPage - maxButtonsToShow + 1);
+    }
+  
+    const buttons = [];
+  
+    for (let i = startPage; i <= endPage; i++) {
+      buttons.push(
+        <TouchableOpacity
+          key={i}
+          onPress={() => handlePageClick(i)}
+          style={[
+            styles.paginationButton,
+            i === currentPage && styles.activeButton,
+          ]}
+        >
+          <Text style={styles.buttonText}>{i + 1}</Text>
+        </TouchableOpacity>
+      );
+    }
+    return <View style={styles.paginationContainer}>{buttons}</View>;
+
+  }
 
   const handleRefresh = () => {
     setRefreshing(true);
-    if (onTicketRefresh) {
-      onTicketRefresh();
-    }
+    onTicketRefresh?.();
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);
-  }
+  };
   
-  const renderTicketItem = ({ item }: { item: Ticket }) => {
+  const renderTicketItem = ({ item }: { item: TicketFirst }) => {
     return (
       <TouchableOpacity
         style={styles.ticketItem}
         onPress={() => onTicketPress && onTicketPress(item)}
       >
         <View style={styles.ticketContent}>
-          <Text style={styles.ticketName}>{item.name}</Text>
+          <Text style={styles.ticketName}>{item.title}</Text>
 
           <View style={styles.ticketDetails}>
             <View style={styles.infoContainer}>
@@ -110,11 +150,10 @@ const TicketList: React.FC<TicketListProps> = ({
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
- 
      
     <View style={styles.flatListView}>
       <FlatList
-        data={tickets}
+        data={paginatedTickets}
         renderItem={renderTicketItem}
         keyExtractor={(item, index) => `ticket-${index}`}
         contentContainerStyle={styles.listContent}
@@ -127,8 +166,8 @@ const TicketList: React.FC<TicketListProps> = ({
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
       />
+      {renderPaginationButtons()}
   </View>
-      {/* Floating Add Button */}
       <TouchableOpacity
         style={styles.floatingButton}
         onPress={onAddTicket}
@@ -138,8 +177,7 @@ const TicketList: React.FC<TicketListProps> = ({
       </TouchableOpacity>
     </View>
   );
-};
-
+  }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -239,6 +277,30 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  paginationButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginHorizontal: 4,
+    backgroundColor: 'gray',
+  },
+  activeButton: {
+    backgroundColor: '#22c55d',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  buttonText: {
+    color: 'white',
   },
 });
 

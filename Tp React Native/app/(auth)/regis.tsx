@@ -27,7 +27,7 @@ export default function Register() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user
-
+      const userId = user.uid;
 
       await setDoc(doc(db, "Users", user.uid), {
         email: email,

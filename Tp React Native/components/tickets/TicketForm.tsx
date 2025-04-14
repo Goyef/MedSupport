@@ -1,4 +1,6 @@
 import { Ticket } from "@/services/ticket.service";
+import { TicketFirst, TicketTrue } from "@/types/ticket";
+import { Timestamp } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import {
   Modal,
@@ -18,8 +20,8 @@ import {
 interface AddTicketFormProps {
   visible: boolean;
   onClose: () => void;
-  onSave: (ticket: Ticket) => void;
-  initialTicket?: Ticket;
+  onSave: (ticket: TicketFirst) => void;
+  initialTicket?: TicketFirst;
 }
 
 const AddTicketForm: React.FC<AddTicketFormProps> = ({
@@ -29,12 +31,13 @@ const AddTicketForm: React.FC<AddTicketFormProps> = ({
   initialTicket,
 }) => {
   // État initial du ticket
-  const [ticket, setTicket] = useState<Ticket>
+  const [ticket, setTicket] = useState<TicketFirst>
    ({
-    idTicket: "",
-    name: "",
-    status: "Open",
-    priority: "Medium", 
+    title: "",
+    description:"",
+    status: "new",
+    priority: "medium",
+    category: "hardware",
   });
 
   useEffect(() => {
@@ -43,16 +46,21 @@ const AddTicketForm: React.FC<AddTicketFormProps> = ({
     }
   }, [initialTicket]);
   // Options disponibles
-  const statusOptions = ["Open", "In Progress", "Closed"];
-  const priorityOptions = ["High", "Medium", "Low"];
+  const statusOptions = ["new", "assigned", "in-progress","resolved","closed"];
+  const priorityOptions = ["low", "medium", "high","critical"];
+  const categoryOPtions = ["hardware","software","network","access","other"]
 
   // Gestion des erreurs
   const [nameError, setNameError] = useState("");
 
   // Validation du formulaire
   const validateForm = (): boolean => {
-    if (!ticket.name.trim()) {
-      setNameError("Le nom du ticket est requis");
+    if (!ticket.title.trim()) {
+      setNameError("Le titre du ticket est requis");
+      return false;
+    }
+    if (!ticket.description.trim()) {
+      setNameError("La description du ticket est requis");
       return false;
     }
     setNameError("");
@@ -65,10 +73,11 @@ const AddTicketForm: React.FC<AddTicketFormProps> = ({
       onSave(ticket);
       // Réinitialiser le formulaire
       setTicket({
-        idTicket:"",
-        name: "",
-        status: "Open",
-        priority: "Medium",
+    title: "",
+    description:"",
+    status: "new",
+    priority: "medium",
+    category: "hardware",
       });
       onClose();
     }
@@ -78,7 +87,7 @@ const AddTicketForm: React.FC<AddTicketFormProps> = ({
   const renderOptions = (
     options: string[],
     selectedValue: string,
-    field: "status" | "priority"
+    field: "status" | "priority"|"category"
   ) => {
     return (
       <View style={styles.optionsContainer}>
@@ -131,9 +140,24 @@ const AddTicketForm: React.FC<AddTicketFormProps> = ({
                   <Text style={styles.label}>Nom du ticket</Text>
                   <TextInput
                     style={[styles.input, nameError ? styles.inputError : null]}
-                    value={ticket.name}
+                    value={ticket.title}
                     onChangeText={(text) => {
-                      setTicket({ ...ticket, name: text });
+                      setTicket({ ...ticket, title: text });
+                      if (text.trim()) setNameError("");
+                    }}
+                    placeholder="Titre du ticket..."
+                    placeholderTextColor="#A0A0A0"
+                  />
+                  {nameError ? (
+                    <Text style={styles.errorText}>{nameError}</Text>
+                  ) : null}
+
+                  <Text style={styles.label}>Description du ticket</Text>
+                  <TextInput
+                    style={[styles.input, nameError ? styles.inputError : null]}
+                    value={ticket.description}
+                    onChangeText={(text) => {
+                      setTicket({ ...ticket, description: text });
                       if (text.trim()) setNameError("");
                     }}
                     placeholder="Décrivez le ticket..."
@@ -152,6 +176,11 @@ const AddTicketForm: React.FC<AddTicketFormProps> = ({
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>Priorité</Text>
                   {renderOptions(priorityOptions, ticket.priority, "priority")}
+                </View>
+
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>Catégorie</Text>
+                  {renderOptions(categoryOPtions, ticket.category, "category")}
                 </View>
               </ScrollView>
 

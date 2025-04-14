@@ -1,12 +1,13 @@
-import { Text } from 'react-native';
 import { Redirect, Stack, Tabs } from 'expo-router';
 import { useAuth } from '@/context/ctx';
 import Ionicons from "@expo/vector-icons/build/Ionicons";
 
-export default function TabLayout() {
+export default  function TabLayout() {
     const { user, loading } = useAuth();
-  
+
+
     if (!user) return <Redirect href="/login" />;
+
   
     return (
         <Tabs

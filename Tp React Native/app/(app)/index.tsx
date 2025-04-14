@@ -1,6 +1,5 @@
 import { Text, View, StyleSheet, Pressable } from 'react-native';
  import { Link, Redirect, useRouter } from 'expo-router'; 
-import { useAuth } from '@/context/ctx';
 import { getAuth } from 'firebase/auth';
 import Button from '@/components/ui/Button';
 
@@ -10,10 +9,7 @@ export default function Dashboard() {
     router.replace("/profile");
   }
 
-  const goToTicketsIndex= () => {
-    router.replace("/tickets");
-  }
-
+ 
   const signOut = () => {
     const auth = getAuth();
 

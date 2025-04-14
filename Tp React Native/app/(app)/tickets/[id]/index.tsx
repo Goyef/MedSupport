@@ -2,22 +2,24 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { View, Text, Alert, ActivityIndicator,StyleSheet } from "react-native";
 import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
-import { getDetailTicket, Ticket,deleteTicket,updateTicket  } from "@/services/ticket.service"; 
+import { getDetailTicket,deleteTicket,updateTicket  } from "@/services/ticket.service"; 
 import AddTicketForm from "@/components/tickets/TicketForm";
-const TicketDetails = ({ refreshTickets }: { refreshTickets: () => void }) => {
+import { TicketFirst } from "@/types/ticket";
+const TicketDetails = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const idTicket = id as string;
 
-  const [ticket, setTicket] = useState<Ticket | null>(null);
+  const [ticket, setTicket] = useState<TicketFirst | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 
   useEffect(() => {
     if (idTicket) {
+      console.log(idTicket)
       setLoading(true);
       getDetailTicket(idTicket).then((data) => {
-        if (data) setTicket(data as Ticket);
+        if (data) setTicket(data as TicketFirst);
         setLoading(false);
       });
     }
@@ -31,7 +33,7 @@ const TicketDetails = ({ refreshTickets }: { refreshTickets: () => void }) => {
     setIsEditModalVisible(true);
   };
 
-  const handleSaveEdit = async (updatedTicket: Ticket) => {
+  const handleSaveEdit = async (updatedTicket: TicketFirst) => {
     
     if (!updatedTicket || !idTicket) return;
   
@@ -47,13 +49,13 @@ const TicketDetails = ({ refreshTickets }: { refreshTickets: () => void }) => {
   
             await updateTicket({
               idTicket: idTicket,
-              nameTicket: updatedTicket.name,
+              nameTicket: updatedTicket.title,
               statusTicket: updatedTicket.status,
               priorityTicket: updatedTicket.priority,
             });
   
             // Récupération du ticket mis à jour
-            const updated = await getDetailTicket(idTicket) as Ticket;
+            const updated = await getDetailTicket(idTicket) as TicketFirst;
             if (updated) {
               setTicket(updated);
               console.log("Ticket mis à jour avec succès:", updated);
@@ -104,7 +106,7 @@ const TicketDetails = ({ refreshTickets }: { refreshTickets: () => void }) => {
         alignItems: "center",
         padding: 20,
       }}>
-        <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 10 }}>{ticket.name}</Text>
+        <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 10 }}>{ticket.title}</Text>
         <Text>Status: {ticket.status}</Text>
         <Text>Priorité: {ticket.priority}</Text>
 
