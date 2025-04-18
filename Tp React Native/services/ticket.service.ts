@@ -1,17 +1,17 @@
 import { db } from "@/config/firebase";
 import { TicketFirst, TicketTrue } from "@/types/ticket";
+import { dateOnly } from "@/utils/dateFormatter";
 import { collection, getDocs, addDoc, updateDoc, doc,getDoc, deleteDoc, Timestamp } from "firebase/firestore";
 
 
-const getAllTickets = async (): Promise<TicketFirst[]> => {
+const getAllTickets = async (): Promise<TicketTrue[]> => {
   const ticketsCollection = collection(db, "Tickets");
   const snapshot = await getDocs(ticketsCollection);
 
-  console.log("Raw snapshot:", snapshot.docs.map(doc => doc.data()));
 
   return snapshot.docs.map((doc) => ({
     id: doc.id,
-    ...(doc.data() as TicketFirst),
+    ...(doc.data() as TicketTrue),
   }));
 };
 
@@ -50,21 +50,28 @@ const getDetailTicket = async (idTicket: string) => {
 //Création de tickets
 const createTicket = async (ticket: TicketFirst): Promise<TicketTrue | null> => {
   try {
+    console.log("ticket envoyé :", ticket);
   const ticketsCollection = collection(db, "Tickets");
   if (!ticket.createdBy || typeof ticket.createdBy !== 'string') {
     throw new Error("une erreur sur l'utilisateur");
   }
+  
   const userRef = doc(db, "Users", ticket.createdBy);
-   await addDoc(ticketsCollection, {
+  const ticketData: TicketFirst = {
     title: ticket.title,
     description: ticket.description,
     status: ticket.status,
     priority: ticket.priority,
     category: ticket.category,
     createdBy: userRef,
-    createdAt: Timestamp.fromDate(new Date()),
-    updatedAt: Timestamp.fromDate(new Date()),
-  });
+    createdAt: Timestamp.fromDate(dateOnly),
+    updatedAt: Timestamp.fromDate(dateOnly),
+  };
+  if (ticket.location) {
+    ticketData.location = ticket.location;
+  }
+  console.log("TicketData avant ajout :", ticketData);
+  await addDoc(ticketsCollection, ticketData);
   return {
     title: ticket.title,
     description: ticket.description,
@@ -95,24 +102,48 @@ const deleteTicket = async (idTicket:string) : Promise<boolean> => {
   }
 };
 
- const updateTicket = async ({
-  idTicket,
-  nameTicket,
-  statusTicket,
-  priorityTicket,
-}: {
-  idTicket: string;
-  nameTicket: string;
-  statusTicket: string;
-  priorityTicket: string;
-}) => {
-  const ticketRef = doc(db, "Tickets", idTicket);
+const updateTicket = async (
+  idTicket: string,
+  updatedData: TicketFirst
+): Promise<void> => {
+  if (!idTicket) throw new Error("ID du ticket manquant");
 
-  await updateDoc(ticketRef, {
-    name: nameTicket,  
-    status: statusTicket, 
-    priority: priorityTicket,
-  });
+  const ticketRef = doc(db, "Tickets", idTicket);
+  const now = new Date();
+  const dateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const updatePayload: any = {
+    title: updatedData.title,
+    description: updatedData.description,
+    status: updatedData.status,
+    priority: updatedData.priority,
+    category: updatedData.category,
+    updatedAt: Timestamp.fromDate(dateOnly),
+  };
+
+  if (updatedData.createdBy) {
+    updatePayload.createdBy =
+      typeof updatedData.createdBy === "string"
+        ? doc(db, "Users", updatedData.createdBy)
+        : updatedData.createdBy;
+  }
+
+  if (updatedData.assignedTo) {
+    updatePayload.assignedTo =
+      typeof updatedData.assignedTo === "string"
+        ? doc(db, "Users", updatedData.assignedTo)
+        : updatedData.assignedTo;
+  }
+
+  if (updatedData.dueDate) {
+    updatePayload.dueDate = updatedData.dueDate;
+  }
+
+  if (updatedData.location) {
+    updatePayload.location = updatedData.location;
+  }
+
+  await updateDoc(ticketRef, updatePayload);
 };
 
 

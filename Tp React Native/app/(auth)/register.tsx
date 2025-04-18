@@ -60,7 +60,7 @@ export default function Register() {
         style={styles.input}
       />
       <TextInput
-        label="Nom de famille"
+        label="Nom"
         value={fullName}
         onChangeText={setName}
         mode="outlined"

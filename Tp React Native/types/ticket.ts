@@ -27,8 +27,8 @@ export interface TicketTrue {
     status: 'new' | 'assigned' | 'in-progress' | 'resolved' | 'closed';
     priority: 'low' | 'medium' | 'high' | 'critical';
     category: 'hardware' | 'software' | 'network' | 'access' | 'other';
-    createdBy?: string;
-    assignedTo?: DocumentReference;
+    createdBy?: string| DocumentReference;
+    assignedTo?: string |DocumentReference;
     createdAt?: Timestamp;
     updatedAt?: Timestamp;
     dueDate?: Timestamp;

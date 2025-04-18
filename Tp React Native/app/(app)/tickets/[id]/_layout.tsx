@@ -5,6 +5,7 @@ export default function TicketDetailLayout() {
   return <>
   <Stack>
   <Stack.Screen name="index" options={{ headerShown: false }} />
+  <Stack.Screen name="commentScreen" options={{ headerShown: false }} />
      </Stack>
      <StatusBar style="light" /></>;
 }

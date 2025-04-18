@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { View, StyleSheet, Alert } from "react-native";
 import { TextInput, IconButton,Button as Bt } from "react-native-paper";
 import { sendEmailVerification, signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/config/firebase";
+import { auth, db } from "@/config/firebase";
 import { Link, useRouter } from "expo-router";
 import Button from "@/components/ui/Button";
+import { doc, Timestamp, updateDoc } from "firebase/firestore";
 
 const LoginScreen = () => {
   const router = useRouter();
@@ -26,8 +27,13 @@ const LoginScreen = () => {
 
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential= await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
+      const userRef = doc(db, "Users", user.uid);
+      await updateDoc(userRef, {
+        lastLogin: Timestamp.now(),
+      });
       Alert.alert("Succès", "Connexion réussie !");
       router.replace("/(app)")
       // Redirection ou mise à jour de l'état après connexion

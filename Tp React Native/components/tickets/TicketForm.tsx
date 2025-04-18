@@ -1,4 +1,3 @@
-import { Ticket } from "@/services/ticket.service";
 import { TicketFirst, TicketTrue } from "@/types/ticket";
 import { Timestamp } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
@@ -15,6 +14,8 @@ import {
   Keyboard,
   ScrollView,
 } from "react-native";
+import * as Location from "expo-location";
+import Ionicons from "@expo/vector-icons/build/Ionicons";
 
 // Props pour le formulaire
 interface AddTicketFormProps {
@@ -39,10 +40,14 @@ const AddTicketForm: React.FC<AddTicketFormProps> = ({
     priority: "medium",
     category: "hardware",
   });
+  const [typeForm, setTypeForm] = useState<string>("")
 
   useEffect(() => {
     if (initialTicket) {
       setTicket(initialTicket);
+      setTypeForm("edit")
+    } else {
+      setTypeForm("add")
     }
   }, [initialTicket]);
   // Options disponibles
@@ -69,6 +74,8 @@ const AddTicketForm: React.FC<AddTicketFormProps> = ({
 
   // Soumission du formulaire
   const handleSubmit = () => {
+    console.log("testTicketSTP",ticket)
+
     if (validateForm()) {
       onSave(ticket);
       // Réinitialiser le formulaire
@@ -83,12 +90,31 @@ const AddTicketForm: React.FC<AddTicketFormProps> = ({
     }
   };
 
+  const detectLocation = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        alert("Permission de localisation refusée");
+        return;
+      }
+  
+      const location = await Location.getCurrentPositionAsync({});
+      const coords = `${location.coords.latitude},${location.coords.longitude}`;
+      setTicket((prev) => ({ ...prev, location: coords }));
+    } catch (error) {
+      console.error("Erreur de géolocalisation :", error);
+      alert("Impossible d'obtenir la position");
+    }
+  };
+
   // Selection d'option
   const renderOptions = (
     options: string[],
     selectedValue: string,
     field: "status" | "priority"|"category"
   ) => {
+    const isEditMode = typeForm === "edit";
+    const isStatusField = field === "status";
     return (
       <View style={styles.optionsContainer}>
         {options.map((option) => (
@@ -98,7 +124,12 @@ const AddTicketForm: React.FC<AddTicketFormProps> = ({
               styles.optionButton,
               ticket[field] === option && styles.selectedOption,
             ]}
-            onPress={() => setTicket({ ...ticket, [field]: option })}
+            onPress={() => {
+              if (isStatusField || !isEditMode) {
+                setTicket({ ...ticket, [field]: option });
+              }
+            }}
+            disabled={isEditMode && field !== "status"}
           >
             <Text
               style={[
@@ -139,11 +170,15 @@ const AddTicketForm: React.FC<AddTicketFormProps> = ({
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>Nom du ticket</Text>
                   <TextInput
-                    style={[styles.input, nameError ? styles.inputError : null]}
+                    style={[styles.input, 
+                      nameError ? styles.inputError : null, 
+                      typeForm === "edit" && { backgroundColor: "#EDEDED", color: "#999" },]}
                     value={ticket.title}
                     onChangeText={(text) => {
-                      setTicket({ ...ticket, title: text });
-                      if (text.trim()) setNameError("");
+                      if (typeForm !== "edit") {
+                        setTicket({ ...ticket, title: text });
+                        if (text.trim()) setNameError("");
+                      }
                     }}
                     placeholder="Titre du ticket..."
                     placeholderTextColor="#A0A0A0"
@@ -154,11 +189,15 @@ const AddTicketForm: React.FC<AddTicketFormProps> = ({
 
                   <Text style={styles.label}>Description du ticket</Text>
                   <TextInput
-                    style={[styles.input, nameError ? styles.inputError : null]}
+                    style={[styles.input,
+                       nameError ? styles.inputError : null, 
+                      typeForm === "edit" && { backgroundColor: "#EDEDED", color: "#999" },]}
                     value={ticket.description}
                     onChangeText={(text) => {
-                      setTicket({ ...ticket, description: text });
-                      if (text.trim()) setNameError("");
+                      if (typeForm !== "edit") {
+                        setTicket({ ...ticket, description: text });
+                        if (text.trim()) setNameError("");
+                      }
                     }}
                     placeholder="Décrivez le ticket..."
                     placeholderTextColor="#A0A0A0"
@@ -173,15 +212,34 @@ const AddTicketForm: React.FC<AddTicketFormProps> = ({
                   {renderOptions(statusOptions, ticket.status, "status")}
                 </View>
 
+                {typeForm !== "edit" && (
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>Priorité</Text>
                   {renderOptions(priorityOptions, ticket.priority, "priority")}
                 </View>
+              )}
+              
+                {typeForm !== "edit" && (
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Catégorie</Text>
+                    {renderOptions(categoryOPtions, ticket.category, "category")}
+                  </View>
+                )}
 
+              {typeForm == "add" && (
                 <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Catégorie</Text>
-                  {renderOptions(categoryOPtions, ticket.category, "category")}
+                  <Text style={styles.label}>Localisation</Text>
+                  <TouchableOpacity onPress={detectLocation} style={styles.detectButton}>
+                    <Ionicons name="earth-outline" size={16}></Ionicons>
+                    <Text style={styles.detectButtonText}>Détecter la position</Text>
+                  </TouchableOpacity>
+                  {ticket.location && (
+                    <Text style={styles.locationText}>
+                      Position détectée : {ticket.location}
+                    </Text>
+                  )}
                 </View>
+              )}
               </ScrollView>
 
               <View style={styles.buttonContainer}>
@@ -333,6 +391,24 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "500",
+  },
+  detectButton: {
+    backgroundColor: "#2196F3",
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 8,
+  },
+  detectButtonText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  locationText: {
+    marginTop: 8,
+    color: "#424242",
+    fontSize: 14,
   },
 });
 

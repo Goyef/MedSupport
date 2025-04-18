@@ -1,7 +1,8 @@
-import { Text, View, StyleSheet, Pressable } from 'react-native';
+import { Text, View, StyleSheet, Pressable, } from 'react-native';
  import { Link, Redirect, useRouter } from 'expo-router'; 
 import { getAuth } from 'firebase/auth';
 import Button from '@/components/ui/Button';
+
 
 export default function Dashboard() {
   const router = useRouter();
@@ -24,6 +25,8 @@ export default function Dashboard() {
           Se déconnecter
         </Text>
       </Pressable>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    </View>
       <Button theme="secondary" label="Profile" onPress={goToProfile} />
     </View>
   );

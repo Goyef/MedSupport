@@ -8,15 +8,20 @@ import React from "react";
 import Ionicons from "@expo/vector-icons/build/Ionicons";
 import { TicketFirst } from "@/types/ticket";
 import { useAuth } from "@/context/ctx";
+import { DocumentReference } from "firebase/firestore";
 
 const Tickets = () => {
   const router = useRouter();
   const ticketsData: TicketFirst[] = [];
   const [yourTicketsData, setYourTicketsData] = useState<TicketFirst[]>(ticketsData);
+  const [initialTicketsData, setInitialTicketsData] = useState<TicketFirst[]>([]);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredTickets, setFilteredTickets] = useState<TicketFirst[]>(yourTicketsData);
-    const { user, loading } = useAuth();
+  const [isPrioritySorted, setIsPrioritySorted] = useState(false);
+const [isStatusSorted, setIsStatusSorted] = useState(false);
+
+    const { user, loading,role } = useAuth();
     
       if (!user) return <Redirect href="/login" />;
   const priorityMap = new Map<string, number>([
@@ -34,7 +39,19 @@ const Tickets = () => {
   ]);
   const getTickets = async () => {
     const tickets = await getAllTickets();
-    setYourTicketsData(tickets);
+
+    let filtered = tickets;
+    
+    if (role === "employee") {
+
+      filtered = tickets.filter(ticket => ticket.createdBy.id === user?.uid);
+    } else if (role === "support") {
+
+      filtered = tickets.filter(ticket => ticket.assignedTo?.id === user?.uid);
+
+    }
+    setYourTicketsData(filtered);
+    setInitialTicketsData(filtered);
   };
 
   useEffect(() => {
@@ -60,7 +77,8 @@ const Tickets = () => {
                          status: ticket.status,
                          priority: ticket.priority,
                          category: ticket.category,
-                         createdBy:user?.uid });
+                         createdBy:user?.uid,
+                         location: ticket.location });
     getTickets();
     setIsModalVisible(false)
   };
@@ -69,22 +87,35 @@ const Tickets = () => {
     setIsModalVisible(false);
   };
   const sortByPriority = () => {
+    if (!isPrioritySorted) {
     const sorted = [...yourTicketsData].sort((a, b) => {
       const aValue = priorityMap.get(a.priority.toLowerCase()) ?? 999;
       const bValue = priorityMap.get(b.priority.toLowerCase()) ?? 999;
       return aValue - bValue; 
     });
     setYourTicketsData(sorted);
+  }else {
+    setYourTicketsData(initialTicketsData)
+  }
+  setIsPrioritySorted(!isPrioritySorted)
+  setIsStatusSorted(false);
   };
   
   const sortByStatus = () => {
+    if (!isStatusSorted) {
     const sorted = [...yourTicketsData].sort((a, b) => {
       const aValue = statusMap.get(a.status.toLowerCase()) ?? 999;
       const bValue = statusMap.get(b.status.toLowerCase()) ?? 999;
       return aValue - bValue;
     });
     setYourTicketsData(sorted);
-  };
+  } else {
+    setYourTicketsData(initialTicketsData)
+  } 
+  setIsStatusSorted(!isStatusSorted)
+  setIsPrioritySorted(false)
+
+}
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -108,13 +139,7 @@ const Tickets = () => {
         style={styles.SearchBar}
       />
      <View style={styles.filterBtn}>
-      <TouchableOpacity
-        onPress={sortByPriority}
-        style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-      >
-        <Ionicons name="filter-outline" size={16} />
-        <Text>Priorité</Text>
-      </TouchableOpacity>
+      
 
       <TouchableOpacity
         onPress={sortByStatus}
@@ -123,12 +148,21 @@ const Tickets = () => {
         <Ionicons name="filter-outline" size={16} />
         <Text>Statut</Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        onPress={sortByPriority}
+        style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+      >
+        <Ionicons name="filter-outline" size={16} />
+        <Text>Priorité</Text>
+      </TouchableOpacity>
     </View>
       <TicketList
       tickets={filteredTickets}
       onTicketRefresh={getTickets}
       onTicketPress={handleTicketPress}
       onAddTicket={handleAddTicketList} />
+
+    
       <View style={{ flexDirection: "row", justifyContent: "space-evenly", marginVertical: 10 }}>
 
 </View>
