@@ -4,18 +4,20 @@ import { getAuth } from 'firebase/auth';
 import Button from '@/components/ui/Button';
 
 
+
 export default function Dashboard() {
   const router = useRouter();
   const goToProfile = () => {
     router.replace("/profile");
   }
 
- 
   const signOut = () => {
     const auth = getAuth();
 
     auth.signOut();
   }
+
+
 
   return (
     <View style={styles.container}>

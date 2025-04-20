@@ -3,8 +3,7 @@ import { useAuth } from '@/context/ctx';
 import Ionicons from "@expo/vector-icons/build/Ionicons";
 
 export default  function TabLayout() {
-    const { user, loading } = useAuth();
-
+    const { user, loading,role } = useAuth();
 
     if (!user) return <Redirect href="/login" />;
 
@@ -58,7 +57,6 @@ export default  function TabLayout() {
                     ),
                 }}
             />
-      
         </Tabs>
     );
 }

@@ -1,3 +1,4 @@
+import { useAuth } from '@/context/ctx';
 import { Stack, Tabs } from 'expo-router';
 
 export default function TicketsTabsLayout() {

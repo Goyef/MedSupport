@@ -1,10 +1,12 @@
 import { db } from "@/config/firebase";
 import { TicketFirst, TicketTrue } from "@/types/ticket";
 import { dateOnly } from "@/utils/dateFormatter";
-import { collection, getDocs, addDoc, updateDoc, doc,getDoc, deleteDoc, Timestamp } from "firebase/firestore";
+import { collection, getDocs, addDoc, updateDoc, doc,getDoc, deleteDoc, Timestamp, onSnapshot, DocumentReference } from "firebase/firestore";
+import { notifyLocal } from "@/components/notificaction/localNotification";
 
 
 const getAllTickets = async (): Promise<TicketTrue[]> => {
+  //je ne le mets pas en abonnement en temps réel pour laisser l'utilité du pullToRefresh
   const ticketsCollection = collection(db, "Tickets");
   const snapshot = await getDocs(ticketsCollection);
 
@@ -14,6 +16,7 @@ const getAllTickets = async (): Promise<TicketTrue[]> => {
     ...(doc.data() as TicketTrue),
   }));
 };
+
 
 
 async function getTicketsDB() {
@@ -50,12 +53,10 @@ const getDetailTicket = async (idTicket: string) => {
 //Création de tickets
 const createTicket = async (ticket: TicketFirst): Promise<TicketTrue | null> => {
   try {
-    console.log("ticket envoyé :", ticket);
   const ticketsCollection = collection(db, "Tickets");
   if (!ticket.createdBy || typeof ticket.createdBy !== 'string') {
     throw new Error("une erreur sur l'utilisateur");
   }
-  
   const userRef = doc(db, "Users", ticket.createdBy);
   const ticketData: TicketFirst = {
     title: ticket.title,
@@ -70,7 +71,9 @@ const createTicket = async (ticket: TicketFirst): Promise<TicketTrue | null> => 
   if (ticket.location) {
     ticketData.location = ticket.location;
   }
-  console.log("TicketData avant ajout :", ticketData);
+  if (ticket.dueDate) {
+    ticketData.dueDate = ticket.dueDate;
+  }
   await addDoc(ticketsCollection, ticketData);
   return {
     title: ticket.title,
@@ -121,13 +124,6 @@ const updateTicket = async (
     updatedAt: Timestamp.fromDate(dateOnly),
   };
 
-  if (updatedData.createdBy) {
-    updatePayload.createdBy =
-      typeof updatedData.createdBy === "string"
-        ? doc(db, "Users", updatedData.createdBy)
-        : updatedData.createdBy;
-  }
-
   if (updatedData.assignedTo) {
     updatePayload.assignedTo =
       typeof updatedData.assignedTo === "string"
@@ -138,14 +134,20 @@ const updateTicket = async (
   if (updatedData.dueDate) {
     updatePayload.dueDate = updatedData.dueDate;
   }
-
-  if (updatedData.location) {
-    updatePayload.location = updatedData.location;
-  }
++
 
   await updateDoc(ticketRef, updatePayload);
 };
 
 
-export { getAllTickets, getTicketsDB, createTicket, getDetailTicket,deleteTicket,updateTicket };
+
+ const assignSupportToTicket = async (ticketId: string, supportUserId: string) => {
+  const ticketRef = doc(db, "Tickets", ticketId);
+  const supportRef = doc(db, "Users", supportUserId);
+  await updateDoc(ticketRef, { assignedTo: supportRef });
+  
+  await notifyLocal(ticketId);
+};
+
+export { getAllTickets, getTicketsDB, createTicket, getDetailTicket,deleteTicket,updateTicket,assignSupportToTicket };
 

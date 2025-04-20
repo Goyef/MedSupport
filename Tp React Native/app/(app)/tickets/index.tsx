@@ -21,7 +21,7 @@ const Tickets = () => {
   const [isPrioritySorted, setIsPrioritySorted] = useState(false);
 const [isStatusSorted, setIsStatusSorted] = useState(false);
 
-    const { user, loading,role } = useAuth();
+    const { user,role } = useAuth();
     
       if (!user) return <Redirect href="/login" />;
   const priorityMap = new Map<string, number>([
@@ -39,15 +39,13 @@ const [isStatusSorted, setIsStatusSorted] = useState(false);
   ]);
   const getTickets = async () => {
     const tickets = await getAllTickets();
-
     let filtered = tickets;
-    
     if (role === "employee") {
-
       filtered = tickets.filter(ticket => ticket.createdBy.id === user?.uid);
     } else if (role === "support") {
 
       filtered = tickets.filter(ticket => ticket.assignedTo?.id === user?.uid);
+      console.log("le nombre de tickets", filtered.length)
 
     }
     setYourTicketsData(filtered);
@@ -63,7 +61,6 @@ const [isStatusSorted, setIsStatusSorted] = useState(false);
   }, [yourTicketsData]);
 
   const handleTicketPress = async (ticket: TicketFirst) => {
-    getTickets();  
     router.push(`/tickets/${ticket.id?.toString()}`);
   };
 
@@ -78,8 +75,8 @@ const [isStatusSorted, setIsStatusSorted] = useState(false);
                          priority: ticket.priority,
                          category: ticket.category,
                          createdBy:user?.uid,
-                         location: ticket.location });
-    getTickets();
+                         location: ticket.location,
+                         dueDate: ticket.dueDate });
     setIsModalVisible(false)
   };
 
@@ -128,6 +125,7 @@ const [isStatusSorted, setIsStatusSorted] = useState(false);
       setFilteredTickets(filtered); 
     }
   };
+ 
 
   return (
     

@@ -13,7 +13,6 @@ export default function Register() {
   const [departement, setDepartement] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [secureText, setSecureText] = useState(true);
   const GoToLogin = () => {
     router.push("/(auth)/login");
   }

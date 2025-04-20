@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/ctx";
 import { TicketFirst } from "@/types/ticket";
 import React, { useEffect, useState } from "react";
 import {
@@ -65,7 +66,7 @@ const TicketList: React.FC<TicketListProps> = ({
   const [paginatedTickets, setPaginatedTickets] = useState<TicketFirst[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const itemsPerPage = 4;
-
+  const {user, role,loading}= useAuth()
   useEffect(() => {
     paginateData();
   }, [tickets, currentPage]);
@@ -163,17 +164,22 @@ const TicketList: React.FC<TicketListProps> = ({
         renderItem={renderTicketItem}
         keyExtractor={(item, index) => `ticket-${index}`}
         contentContainerStyle={styles.listContent}
-        ListEmptyComponent={() => (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#2196F3" />
-          </View>
-        )}
+        ListEmptyComponent={() =>
+          loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#2196F3" />
+            </View>
+          ) : (
+              <Text >Recherche de tickets</Text>
+          )
+        }
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
       />
       {renderPaginationButtons()}
   </View>
+      {role === "employee" && 
       <TouchableOpacity
         style={styles.floatingButton}
         onPress={onAddTicket}
@@ -181,6 +187,7 @@ const TicketList: React.FC<TicketListProps> = ({
       >
         <Text style={styles.floatingButtonText}>+</Text>
       </TouchableOpacity>
+}
     </View>
   );
   }
