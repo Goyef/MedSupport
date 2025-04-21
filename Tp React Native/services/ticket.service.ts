@@ -1,15 +1,14 @@
+import { notifyLocalAssignation, notifyLocalEdit, notifyLocalTicket } from "@/components/notification/localNotification";
 import { db } from "@/config/firebase";
 import { TicketFirst, TicketTrue } from "@/types/ticket";
 import { dateOnly } from "@/utils/dateFormatter";
 import { collection, getDocs, addDoc, updateDoc, doc,getDoc, deleteDoc, Timestamp, onSnapshot, DocumentReference } from "firebase/firestore";
-import { notifyLocal } from "@/components/notificaction/localNotification";
 
 
 const getAllTickets = async (): Promise<TicketTrue[]> => {
   //je ne le mets pas en abonnement en temps réel pour laisser l'utilité du pullToRefresh
   const ticketsCollection = collection(db, "Tickets");
   const snapshot = await getDocs(ticketsCollection);
-
 
   return snapshot.docs.map((doc) => ({
     id: doc.id,
@@ -19,30 +18,17 @@ const getAllTickets = async (): Promise<TicketTrue[]> => {
 
 
 
-async function getTicketsDB() {
-  console.log("Getting tickets from DB");
-
-  const querySnapshot = await getDocs(collection(db, "Tickets"));
-  querySnapshot.forEach((doc) => {
-    console.log(`${doc.id} => ${doc.data()}`);
-  });
-}
-
-
 const getDetailTicket = async (idTicket: string) => {
   try {
     if (!idTicket || typeof idTicket !== "string") {
       throw new Error("ID du ticket invalide.");
     }
-
     const ticketRef = doc(db, "Tickets", idTicket);
     const docSnap = await getDoc(ticketRef);
-
     if (!docSnap.exists()) {
       console.log(`Aucun ticket trouvé pour l'ID : ${idTicket}`);
       return null;
     }
-
     return docSnap.data();
   } catch (error) {
     console.log("Erreur lors de la récupération du ticket :", error);
@@ -75,6 +61,7 @@ const createTicket = async (ticket: TicketFirst): Promise<TicketTrue | null> => 
     ticketData.dueDate = ticket.dueDate;
   }
   await addDoc(ticketsCollection, ticketData);
+  await notifyLocalTicket(ticketData.title)
   return {
     title: ticket.title,
     description: ticket.description,
@@ -91,12 +78,8 @@ const createTicket = async (ticket: TicketFirst): Promise<TicketTrue | null> => 
   }
 };
 
-
-
 const deleteTicket = async (idTicket:string) : Promise<boolean> => {
   try {
-    console.log(idTicket)
-
     await deleteDoc(doc(db, "Tickets", idTicket));
     return true;
   } catch (error) {
@@ -134,20 +117,30 @@ const updateTicket = async (
   if (updatedData.dueDate) {
     updatePayload.dueDate = updatedData.dueDate;
   }
-+
 
   await updateDoc(ticketRef, updatePayload);
+  await notifyLocalEdit(updatePayload.title);
 };
 
+const assignSupportToTicket = async (ticketId: string, supportUserId: string) => {
+  try {
+    const ticketRef = doc(db, "Tickets", ticketId);
+    const supportRef = doc(db, "Users", supportUserId);
 
+    await updateDoc(ticketRef, {
+      assignedTo: supportRef,
+      status: "assigned",
+    });
 
- const assignSupportToTicket = async (ticketId: string, supportUserId: string) => {
-  const ticketRef = doc(db, "Tickets", ticketId);
-  const supportRef = doc(db, "Users", supportUserId);
-  await updateDoc(ticketRef, { assignedTo: supportRef });
-  
-  await notifyLocal(ticketId);
+    const ticketSnap = await getDoc(ticketRef);
+    if (ticketSnap.exists()) {
+      const ticketData = ticketSnap.data();
+      const title = ticketData.title || ticketId;
+      await notifyLocalAssignation(title);
+    }
+  } catch (error) {
+    console.error("Erreur lors de l’assignation du ticket :", error);
+  }
 };
-
-export { getAllTickets, getTicketsDB, createTicket, getDetailTicket,deleteTicket,updateTicket,assignSupportToTicket };
+export { getAllTickets, createTicket, getDetailTicket,deleteTicket,updateTicket,assignSupportToTicket };
 

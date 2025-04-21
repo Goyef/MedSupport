@@ -45,7 +45,6 @@ const [isStatusSorted, setIsStatusSorted] = useState(false);
     } else if (role === "support") {
 
       filtered = tickets.filter(ticket => ticket.assignedTo?.id === user?.uid);
-      console.log("le nombre de tickets", filtered.length)
 
     }
     setYourTicketsData(filtered);
@@ -125,10 +124,8 @@ const [isStatusSorted, setIsStatusSorted] = useState(false);
       setFilteredTickets(filtered); 
     }
   };
- 
 
   return (
-    
       <>
             <TextInput
         placeholder="Rechercher un ticket"

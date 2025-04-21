@@ -13,6 +13,8 @@ export default function Register() {
   const [departement, setDepartement] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [secureText, setSecureText] = useState(true);
+
   const GoToLogin = () => {
     router.push("/(auth)/login");
   }
@@ -74,13 +76,21 @@ export default function Register() {
         value={departement}
         onChangeText={setDepartement}
       />
-      <TextInput
-        label="Mot de passe"
-        value={password}
-        onChangeText={setPassword}
-        mode="outlined"
-        autoCapitalize="none"
-      />
+       <View style={styles.passwordContainer}>
+           <TextInput
+             label="Mot de passe"
+             value={password}
+             onChangeText={setPassword}
+             mode="outlined"
+             secureTextEntry={secureText}
+             autoCapitalize="none"
+             style={styles.passwordInput}
+           />
+           <IconButton
+             icon={secureText ? "eye-off" : "eye"}
+             onPress={() => setSecureText(!secureText)}
+           />
+         </View>
       <Bt
         mode="contained"
         loading={loading}
@@ -109,6 +119,9 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 20,
+  },
+  passwordInput: {
+    flex: 1,
   },
   text: {
     color: "#000",

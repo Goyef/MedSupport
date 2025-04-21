@@ -6,7 +6,6 @@ import { auth, db } from "@/config/firebase";
 import { Link, useRouter } from "expo-router";
 import Button from "@/components/ui/Button";
 import { doc, Timestamp, updateDoc } from "firebase/firestore";
-import { registerForPushNotificationsAsync } from "@/hooks/usePushNotifications";
 
 const LoginScreen = () => {
   const router = useRouter();
@@ -32,10 +31,8 @@ const LoginScreen = () => {
       const user = userCredential.user;
 
       const userRef = doc(db, "Users", user.uid);
-      const pushToken = await registerForPushNotificationsAsync();
       await updateDoc(userRef, {
         lastLogin: Timestamp.now(),
-        ...(pushToken && { expoPushToken: pushToken }),
       });
       Alert.alert("Succès", "Connexion réussie !");
       router.replace("/(app)")

@@ -25,6 +25,8 @@ const TicketDetails = () => {
   const [comments, setComments] = useState<comments[]>([]);
   const [assignedToUser, setAssignedToUser] = useState<string | null>(null);
 
+    const isSupport = role ==="support"
+  
   useEffect(() => {
     if (idTicket) {
       setLoading(true);
@@ -103,7 +105,6 @@ const TicketDetails = () => {
             const updated = await getDetailTicket(idTicket) as TicketFirst;
             if (updated) {
               setTicket(updated);
-              console.log("Ticket mis à jour avec succès:", updated);
             }
             setIsEditModalVisible(false);
           },
@@ -211,7 +212,7 @@ const TicketDetails = () => {
             </View>
             {ticket.assignedTo && (
               <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>Assinée à</Text>
+                <Text style={styles.metaLabel}>Assignée à</Text>
                 <Text style={styles.metaValue}>{assignedToUser}</Text>
               </View>
             )}
@@ -235,7 +236,9 @@ const TicketDetails = () => {
         {/* Actions principales */}
         <View style={styles.actionRow}>
             <Button theme="edit" label="Modifier" onPress={handleEdit} />
+            {!isSupport && (
             <Button theme="delete" label="Supprimer" onPress={handleDelete} />
+            )}
         </View>
 
         {/* Actions secondaires */}
