@@ -1,9 +1,9 @@
 import { db } from "@/config/firebase";
 import { User } from "@/types/user";
-import { dateOnly } from "@/utils/dateFormatter";
-import { addDoc, collection, doc, getDoc, getDocs, onSnapshot, query, serverTimestamp, Timestamp, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, onSnapshot, query, updateDoc, where } from "firebase/firestore";
 
 const getUserData = async (uid: string) => {
+  //récupération des données par rapport à l'id
   const userRef = doc(db, "Users", uid);
   const docSnapshot = await getDoc(userRef);
 
@@ -21,6 +21,7 @@ const getUserData = async (uid: string) => {
   throw new Error("Utilisateur introuvable dans la base de données.");
 }
 const listenToSupportUsers = (
+  // récupération en temps réel des supports
   setUsers: (users: User[]) => void
 ) => {
   const userRef = collection(db, "Users");
@@ -38,6 +39,7 @@ const listenToSupportUsers = (
 };
 
  const getAllUsers = async (): Promise<User[]> => {
+  //récupération de tous les utilisateurs
         try {
             const usersRef = collection(db, "Users");
             const querySnapshot = await getDocs(usersRef);
@@ -63,10 +65,9 @@ const listenToSupportUsers = (
     };
 
 const updateUser = async (userId: string): Promise<void> => {
+  //mise à jour des utilisateurs
   if (!userId) throw new Error("ID d'utilisateur manquant.");
-
   const userRef = doc(db, "Users", userId);
-
   await updateDoc(userRef, { role: "support" });
 }
 export { getUserData, listenToSupportUsers, updateUser, getAllUsers };

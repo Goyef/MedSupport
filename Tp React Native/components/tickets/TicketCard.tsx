@@ -12,8 +12,6 @@ import {
   RefreshControl,
 } from "react-native";
 
-
-
 interface TicketListProps {
   tickets: TicketFirst[];
   onTicketPress?: (ticket: TicketFirst) => void;

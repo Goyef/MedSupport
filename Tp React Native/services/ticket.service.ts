@@ -16,9 +16,8 @@ const getAllTickets = async (): Promise<TicketTrue[]> => {
   }));
 };
 
-
-
 const getDetailTicket = async (idTicket: string) => {
+  //donnée d'un ticket en particulier
   try {
     if (!idTicket || typeof idTicket !== "string") {
       throw new Error("ID du ticket invalide.");
@@ -79,6 +78,7 @@ const createTicket = async (ticket: TicketFirst): Promise<TicketTrue | null> => 
 };
 
 const deleteTicket = async (idTicket:string) : Promise<boolean> => {
+  //suprresion d'un ticket
   try {
     await deleteDoc(doc(db, "Tickets", idTicket));
     return true;
@@ -89,6 +89,7 @@ const deleteTicket = async (idTicket:string) : Promise<boolean> => {
 };
 
 const closedTicket = async (
+  //fermeture d'un ticket, change le statut
   idTicket: string,
 ): Promise<void> => {
   if (!idTicket) throw new Error("ID du ticket manquant");
@@ -112,6 +113,7 @@ const closedTicket = async (
 };
 
 const updateTicket = async (
+  //mise à jour d'un ticket
   idTicket: string,
   updatedData: TicketFirst
 ): Promise<void> => {
@@ -146,6 +148,7 @@ const updateTicket = async (
 };
 
 const assignSupportToTicket = async (ticketId: string, supportUserId: string) => {
+  //assignation du ticket
   try {
     const ticketRef = doc(db, "Tickets", ticketId);
     const supportRef = doc(db, "Users", supportUserId);

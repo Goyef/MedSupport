@@ -46,7 +46,6 @@ const AddCommentModal = ({ visible, onClose, onSave }: Props) => {
           {nameError ? (
                               <Text style={styles.errorText}>{nameError}</Text>
                             ) : null}
-          
           <View style={styles.button}>
           <Button title="Envoyer" onPress={handleSubmit} />
           <Button title="Annuler" onPress={onClose} color="grey" />

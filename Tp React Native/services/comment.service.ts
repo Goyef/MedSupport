@@ -2,11 +2,10 @@ import { notifyLocalComment } from "@/components/notification/localNotification"
 import { db } from "@/config/firebase";
 import { comments } from "@/types/comments";
 import { TicketFirst } from "@/types/ticket";
-import { dateOnly } from "@/utils/dateFormatter";
 import { addDoc, collection, doc, getDoc, getDocs, onSnapshot, query, Timestamp, where } from "firebase/firestore";
-import { useState } from "react";
 
 const addComment = async ({
+  //Ajouter un commentaire
     ticketId,
     userId,
     content,
@@ -47,6 +46,7 @@ const addComment = async ({
   };
 
    const listenToComments = (ticketId: string, setComments: (comments: comments[]) => void) => {
+    //Ecoute en temps réel des commentaires
     if (!ticketId) {
       console.error("ID du ticket invalide");
       return () => {}; 

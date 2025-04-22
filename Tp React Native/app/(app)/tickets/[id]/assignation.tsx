@@ -6,6 +6,7 @@ import { User } from "@/types/user";
 import { assignSupportToTicket } from "@/services/ticket.service"; // à créer si nécessaire
 
 const AssignSupportScreen = () => {
+  //récupération du paramètre
   const { id } = useLocalSearchParams();
   const idTicket = id as string;
   const router = useRouter();
@@ -22,7 +23,7 @@ const AssignSupportScreen = () => {
   
   const handleAssign = async (user: User) => {
 
-    if (!idTicket || typeof idTicket !== "string") return;
+    if (!idTicket ) return;
     try {
       await assignSupportToTicket(idTicket, user.userId);
       router.push(`/tickets/${idTicket}`);

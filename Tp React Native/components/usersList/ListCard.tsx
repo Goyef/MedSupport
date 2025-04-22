@@ -1,4 +1,3 @@
-import { useAuth } from "@/context/ctx";
 import { User } from "@/types/user";
 import React, { useEffect, useState } from "react";
 import {
@@ -55,7 +54,8 @@ export const UserList: React.FC<UserListProps> = ({
     setCurrentPage(page);
   };
   const renderPaginationButtons = () => {
-    const maxButtonsToShow = 5;
+    //pagination
+    const maxButtonsToShow = 3;
     let startPage = Math.max(0, currentPage - Math.floor(maxButtonsToShow / 2));
     let endPage = Math.min(totalPages - 1, startPage + maxButtonsToShow - 1);
 
@@ -106,16 +106,6 @@ export const UserList: React.FC<UserListProps> = ({
               />
               <Text style={styles.roleText}>{item.role === "employee" ? "employé" : item.role}</Text>
             </View>
-
-            {/* <View style={styles.infoContainer}>
-              <View
-                style={[
-                  styles.priorityDot,
-                  { backgroundColor: getPriorityColor(item.priority) },
-                ]}
-              />
-              <Text style={styles.priorityText}>{item.priority}</Text>
-            </View> */}
           </View>
         </View>
       </TouchableOpacity>

@@ -6,9 +6,9 @@ export default  function TabLayout() {
     const { user, loading,role } = useAuth();
 
     if (!user) return <Redirect href="/login" />;
-
   
     return (
+        //Mise en place des tabs avec leur icone et nom
         <Tabs
             screenOptions={{
                 tabBarActiveTintColor: "#ffd33d",

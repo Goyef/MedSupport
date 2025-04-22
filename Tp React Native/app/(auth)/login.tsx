@@ -29,6 +29,7 @@ const LoginScreen = () => {
 
     setLoading(true);
     try {
+      //connexion avec firebase
       const userCredential= await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 

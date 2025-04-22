@@ -40,6 +40,7 @@ const TicketDetails = () => {
   }, [idTicket]);
 
   useEffect(() => {
+    //récupération du nom de l'utilisateur
     const fetchCreator = async () => {
       if (ticket?.createdBy) {
         try {

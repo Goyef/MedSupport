@@ -3,6 +3,7 @@ import { AuthProvider } from '@/context/ctx';
 import { Stack } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 
+//Configuration nécessaire pour les notifications
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,

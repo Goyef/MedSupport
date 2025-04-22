@@ -23,9 +23,7 @@ import { DocumentReference, collection, getDocs } from "firebase/firestore";
 import { db } from "@/config/firebase";
 
 const UserProfile = () => {
-    const router = useRouter();
     const [users, setUsers] = useState<User[]>([]);
-    const [isRoleSorted, setIsRoleSorted] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
 

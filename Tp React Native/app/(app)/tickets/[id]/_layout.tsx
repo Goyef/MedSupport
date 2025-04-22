@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 export default function TicketDetailLayout() {
+  //mis dans un dossier [id] pour ne pas le voir dans les tabs
   return <>
   <Stack>
   <Stack.Screen name="index" options={{ headerShown: false }} />
