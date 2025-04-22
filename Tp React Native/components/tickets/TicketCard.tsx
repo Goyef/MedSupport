@@ -83,7 +83,7 @@ const TicketList: React.FC<TicketListProps> = ({
   };
 
   const renderPaginationButtons = () => {
-    const maxButtonsToShow = 5;
+    const maxButtonsToShow = 4;
     let startPage = Math.max(0, currentPage - Math.floor(maxButtonsToShow / 2));
     let endPage = Math.min(totalPages - 1, startPage + maxButtonsToShow - 1);
   
@@ -170,7 +170,7 @@ const TicketList: React.FC<TicketListProps> = ({
               <ActivityIndicator size="large" color="#2196F3" />
             </View>
           ) : (
-              <Text >Recherche de tickets</Text>
+              <Text >Recherche de tickets, essayez de tirer vers le bas</Text>
           )
         }
         refreshControl={
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'gray',
   },
   activeButton: {
-    backgroundColor: '#22c55d',
+    backgroundColor: 'rgb(34, 75, 197)',
     width: 50,
     height: 50,
     borderRadius: 25,

@@ -1,8 +1,10 @@
 import { notifyLocalComment } from "@/components/notification/localNotification";
 import { db } from "@/config/firebase";
 import { comments } from "@/types/comments";
+import { TicketFirst } from "@/types/ticket";
 import { dateOnly } from "@/utils/dateFormatter";
-import { addDoc, collection, doc, getDocs, onSnapshot, query, Timestamp, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, onSnapshot, query, Timestamp, where } from "firebase/firestore";
+import { useState } from "react";
 
 const addComment = async ({
     ticketId,
@@ -15,6 +17,8 @@ const addComment = async ({
     content: string;
     attachmentUrl?: string;
   }) => {
+    let ticket: TicketFirst | null = null;
+
     const commentsRef = collection(db, "Comments");
   
     const newComment = {
@@ -22,10 +26,24 @@ const addComment = async ({
       userId: doc(db, "Users", userId),
       content,
       attachmentUrl: attachmentUrl || null,
-      createdAt: Timestamp.fromDate(new Date),
+      createdAt: Timestamp.fromDate(new Date()),
     };
+  
+    const docSnap = await getDoc(newComment.ticketId);
+    if (!docSnap.exists()) {
+      console.log(`Aucun ticket trouvé pour l'ID : ${newComment.ticketId.id}`);
+      return null;
+    }
+    const data = docSnap.data();
+    if (data) {
+      ticket = data as TicketFirst;
+    }
+  
     await addDoc(commentsRef, newComment);
-    await notifyLocalComment(ticketId);
+  
+    if (ticket !== null) {
+      await notifyLocalComment(ticket.title);
+    }
   };
 
    const listenToComments = (ticketId: string, setComments: (comments: comments[]) => void) => {

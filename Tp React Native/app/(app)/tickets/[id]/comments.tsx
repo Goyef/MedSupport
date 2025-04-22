@@ -71,9 +71,7 @@ const CommentsScreen = () => {
 
   useEffect(() => {
     if (idTicket && Object.keys(usersMap).length > 0) {
-
       const unsubscribeComments = listenToComments(idTicket, (data) => {
-        
         if (data.length > 0) {
         }
 
@@ -110,12 +108,6 @@ const CommentsScreen = () => {
         setComments(sortedComments);
         setLoading(false);
         
-        if (sortedComments.length > 1) {
-          console.log("Vérification du tri: Premier commentaire date:", 
-                     formatDate(sortedComments[0].createdAt),
-                     "Dernier commentaire date:",
-                     formatDate(sortedComments[sortedComments.length-1].createdAt));
-        }
       });
 
       return () => unsubscribeComments();

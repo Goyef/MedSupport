@@ -39,13 +39,12 @@ const [isStatusSorted, setIsStatusSorted] = useState(false);
   ]);
   const getTickets = async () => {
     const tickets = await getAllTickets();
+    //filtrage selon le rôle
     let filtered = tickets;
     if (role === "employee") {
       filtered = tickets.filter(ticket => ticket.createdBy.id === user?.uid);
     } else if (role === "support") {
-
       filtered = tickets.filter(ticket => ticket.assignedTo?.id === user?.uid);
-
     }
     setYourTicketsData(filtered);
     setInitialTicketsData(filtered);
@@ -110,7 +109,6 @@ const [isStatusSorted, setIsStatusSorted] = useState(false);
   } 
   setIsStatusSorted(!isStatusSorted)
   setIsPrioritySorted(false)
-
 }
 
   const handleSearch = (query: string) => {

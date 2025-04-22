@@ -1,8 +1,8 @@
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { View, Text, Alert, ActivityIndicator, StyleSheet, Button as RNButton, ScrollView } from "react-native";
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Button from "@/components/ui/Button";
-import { getDetailTicket, deleteTicket, updateTicket } from "@/services/ticket.service";
+import { getDetailTicket, deleteTicket, updateTicket, closedTicket } from "@/services/ticket.service";
 import AddTicketForm from "@/components/tickets/TicketForm";
 import { TicketFirst } from "@/types/ticket";
 import { DocumentData, DocumentReference, getDoc } from "firebase/firestore";
@@ -41,7 +41,7 @@ const TicketDetails = () => {
 
   useEffect(() => {
     const fetchCreator = async () => {
-      if (ticket?.createdBy && typeof ticket.createdBy !== "string") {
+      if (ticket?.createdBy) {
         try {
           const creatorRef = ticket.createdBy as DocumentReference<DocumentData>;
           const docSnap = await getDoc(creatorRef);
@@ -63,7 +63,7 @@ const TicketDetails = () => {
 
   useEffect(() => {
     const fetchAssigned = async () => {
-      if (ticket?.assignedTo && typeof ticket.assignedTo !== "string") {
+      if (ticket?.assignedTo) {
         try {
           const assignedRef = ticket.assignedTo as DocumentReference<DocumentData>;
           const docSnap = await getDoc(assignedRef);
@@ -84,11 +84,23 @@ const TicketDetails = () => {
   }, [ticket?.assignedTo]);
 
   const goToCommentsScreen = () => router.push(`/tickets/${idTicket}/comments`);
-  const goToAssingationScreen = () => router.push(`/tickets/${idTicket}/assignation`);
+  const goToAssingationScreen = () => {
+    if(ticket?.status !== "closed") {
+    router.push(`/tickets/${idTicket}/assignation`)
+  } else {
+    Alert.alert("Ticket fermé", "Le ticket est fermé")
+  }
+  }
   const goToTicketsIndex = () => router.replace("/tickets");
 
-  const handleEdit = () => setIsEditModalVisible(true);
-
+  const handleEdit = () => 
+  {
+    if(ticket?.status !== "closed") {
+      setIsEditModalVisible(true);
+    } else {
+      Alert.alert("Ticket fermé","Le ticket est fermé")
+    }
+  }
   const handleSaveEdit = async (updatedTicket: TicketFirst) => {
     if (!updatedTicket || !idTicket) return;
 
@@ -135,11 +147,39 @@ const TicketDetails = () => {
     );
   };
 
+  const handleCloseTicket = () => {
+    Alert.alert(
+      "Fermer le ticket",
+      "Voulez-vous vraiment fermer ce ticket ?",
+      [
+        { text: "Annuler", style: "cancel" },
+        {
+          text: "Fermer",
+          style: "destructive",
+          onPress: async () => {
+            if (ticket) {
+              await closedTicket(idTicket);
+              setTicket({ ...ticket, status: "closed" });
+              Alert.alert("Succès", "Le ticket a été fermé avec succès.");
+            }
+          },
+        },
+      ]
+    );
+  }
+  const openCommentModal = () => {
+    {
+      if(ticket?.status !== "closed") {
+        setCommentModalVisible(true);
+      } else {
+        Alert.alert("Ticket fermé","Le ticket est fermé")
+      }
+  }
+}
   const handleAddComment = async (text: string) => {
     if (!user?.uid) {
       return Alert.alert("Erreur", "Utilisateur non connecté.");
     }
-
     try {
       await addComment({
         ticketId: idTicket,
@@ -147,12 +187,11 @@ const TicketDetails = () => {
         content: text,
       });
       
-      Alert.alert("Succès", "Commentaire ajouté");
     } catch (error) {
       console.error("Erreur lors de l'ajout du commentaire :", error);
       Alert.alert("Erreur", "Impossible d'ajouter le commentaire.");
     }
-  };
+  }
 
   const hasComments = comments.length > 0;
 
@@ -244,20 +283,24 @@ const TicketDetails = () => {
         {/* Actions secondaires */}
         <View style={styles.secondaryActions}>
           {role === "admin" && (
-            <RNButton
+            <><RNButton
               title="Assigner le ticket"
               onPress={goToAssingationScreen}
+              color="#0066CC" />
+              
+              <RNButton
+              title= "Fermer le ticket"
+              onPress= {handleCloseTicket}
               color="#0066CC"
-            />
+              />
+            </>
           )}
 
-          {role === "support" && (
             <RNButton
               title="Ajouter un commentaire"
-              onPress={() => setCommentModalVisible(true)}
+              onPress={openCommentModal}
               color="#0066CC"
             />
-          )}
 
           {hasComments && (
             <RNButton

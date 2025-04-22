@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Text, View, StyleSheet, Alert, TouchableOpacity, ActivityIndicator,Image } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { auth } from "@/config/firebase";
@@ -28,8 +28,7 @@ export default function Register() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user
-
-
+      
       await setDoc(doc(db, "Users", user.uid), {
         email: email,
         fullName: fullName,
@@ -49,6 +48,7 @@ export default function Register() {
 
   return (
     <View style={styles.container}>
+      <Image source={require("../../assets/images/logo-gsb.png")} style={styles.image} />
       <Text style={styles.text}>Inscription</Text>
 
       <TextInput
@@ -98,7 +98,7 @@ export default function Register() {
         onPress={handleRegister}
         style={styles.button}
       >S'enregistrer</Bt>
-      <Bt mode="text" onPress={GoToLogin}>déjà un compte ? connectez-vous</Bt>
+      <Bt mode="text" onPress={GoToLogin}>Déjà un compte ? connectez-vous</Bt>
     </View>
   );
 }
@@ -127,5 +127,10 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: 24,
     textAlign: "center",
-  }
+  }, image: {
+    width: "80%",
+    height: 200,
+    resizeMode: "contain",
+    marginBottom: 20,
+  },
 });

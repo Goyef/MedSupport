@@ -40,7 +40,6 @@ export const UserList: React.FC<UserListProps> = ({
   const [paginatedUsers, setPaginatedUsers] = useState<User[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const itemsPerPage = 3;
-  const { user: userAuth, role } = useAuth()
   useEffect(() => {
     paginateData();
   }, [user, currentPage]);

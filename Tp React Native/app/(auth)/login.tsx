@@ -6,6 +6,8 @@ import { auth, db } from "@/config/firebase";
 import { Link, useRouter } from "expo-router";
 import Button from "@/components/ui/Button";
 import { doc, Timestamp, updateDoc } from "firebase/firestore";
+import { Image } from "react-native";
+
 
 const LoginScreen = () => {
   const router = useRouter();
@@ -45,6 +47,7 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
+   <Image source={require("../../assets/images/logo-gsb.png")} style={styles.image} />
       <Button label="Inscription"theme="primary" onPress={goToRegister}/>
       <TextInput
         label="Adresse e-mail"
@@ -105,6 +108,13 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 20,
     backgroundColor: "#0b03fc",
+  },
+  image: {
+    
+    width: "80%",
+    height: 200,
+    resizeMode: "contain",
+    marginBottom: 20,
   },
 });
 

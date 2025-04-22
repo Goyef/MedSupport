@@ -54,7 +54,7 @@ const AddTicketForm: React.FC<AddTicketFormProps> = ({
       setTypeForm("add")
     }
   }, [initialTicket]);
-  const statusOptions = [ "in-progress", "resolved",'closed'];
+  const statusOptions = [ "in-progress", "resolved"];
   const priorityOptions = ["low", "medium", "high", "critical"];
   const categoryOPtions = ["hardware", "software", "network", "access", "other"]
 

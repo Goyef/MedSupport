@@ -88,6 +88,29 @@ const deleteTicket = async (idTicket:string) : Promise<boolean> => {
   }
 };
 
+const closedTicket = async (
+  idTicket: string,
+): Promise<void> => {
+  if (!idTicket) throw new Error("ID du ticket manquant");
+
+  const ticketRef = doc(db, "Tickets", idTicket);
+  const now = new Date();
+  const dateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const updatePayload: any = {
+    status: "closed",
+    updatedAt: Timestamp.fromDate(dateOnly),
+  };
+
+  await updateDoc(ticketRef, updatePayload);
+  const ticketSnap = await getDoc(ticketRef);
+  if (ticketSnap.exists()) {
+    const ticketData = ticketSnap.data();
+    const title = ticketData.title;
+    await notifyLocalEdit(title);
+  }
+};
+
 const updateTicket = async (
   idTicket: string,
   updatedData: TicketFirst
@@ -142,5 +165,5 @@ const assignSupportToTicket = async (ticketId: string, supportUserId: string) =>
     console.error("Erreur lors de l’assignation du ticket :", error);
   }
 };
-export { getAllTickets, createTicket, getDetailTicket,deleteTicket,updateTicket,assignSupportToTicket };
+export { getAllTickets, createTicket, getDetailTicket,deleteTicket,updateTicket,assignSupportToTicket,closedTicket };
 
