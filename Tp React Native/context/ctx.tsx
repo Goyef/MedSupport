@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useContext } from 'react';
-import { onAuthStateChanged, User } from "@firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
 import { auth, db } from "@/config/firebase";
 import { doc, getDoc } from 'firebase/firestore';
 interface AuthContextType {
@@ -19,6 +19,7 @@ const [loading, setLoading] = useState(true);
 const [role, setRole] = useState<string | null>(null);
 
 useEffect(() => {
+
 const unsubscribe = onAuthStateChanged(auth, async (user) => {
 setUser(user);
 setLoading(false);

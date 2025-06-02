@@ -1,4 +1,4 @@
-import { notifyLocalAssignation, notifyLocalEdit, notifyLocalTicket } from "@/components/notification/localNotification";
+// import { notifyLocalAssignation, notifyLocalEdit, notifyLocalTicket } from "@/components/notification/localNotification";
 import { db } from "@/config/firebase";
 import { TicketFirst, TicketTrue } from "@/types/ticket";
 import { dateOnly } from "@/utils/dateFormatter";
@@ -60,7 +60,7 @@ const createTicket = async (ticket: TicketFirst): Promise<TicketTrue | null> => 
     ticketData.dueDate = ticket.dueDate;
   }
   await addDoc(ticketsCollection, ticketData);
-  await notifyLocalTicket(ticketData.title)
+  // await notifyLocalTicket(ticketData.title)
   return {
     title: ticket.title,
     description: ticket.description,
@@ -108,7 +108,7 @@ const closedTicket = async (
   if (ticketSnap.exists()) {
     const ticketData = ticketSnap.data();
     const title = ticketData.title;
-    await notifyLocalEdit(title);
+    // await notifyLocalEdit(title);
   }
 };
 
@@ -144,7 +144,7 @@ const updateTicket = async (
   }
 
   await updateDoc(ticketRef, updatePayload);
-  await notifyLocalEdit(updatePayload.title);
+  // await notifyLocalEdit(updatePayload.title);
 };
 
 const assignSupportToTicket = async (ticketId: string, supportUserId: string) => {
@@ -162,7 +162,7 @@ const assignSupportToTicket = async (ticketId: string, supportUserId: string) =>
     if (ticketSnap.exists()) {
       const ticketData = ticketSnap.data();
       const title = ticketData.title || ticketId;
-      await notifyLocalAssignation(title);
+      // await notifyLocalAssignation(title);
     }
   } catch (error) {
     console.error("Erreur lors de l’assignation du ticket :", error);

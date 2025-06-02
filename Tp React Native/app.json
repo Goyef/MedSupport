@@ -7,15 +7,18 @@
     "icon": "./assets/images/logo-gsb.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "updates" : {
-      "enabled":false
+    "updates": {
+      "enabled": false
     },
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
     "android": {
-      "permissions": ["ACCESS_FINE_LOCATION","NOTIFICATIONS"],
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "NOTIFICATIONS"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -37,9 +40,10 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-font",
+      "expo-web-browser"
     ],
-    
     "experiments": {
       "typedRoutes": true
     },

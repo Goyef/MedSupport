@@ -1,4 +1,4 @@
-import { notifyLocalComment } from "@/components/notification/localNotification";
+// import { notifyLocalComment } from "@/components/notification/localNotification";
 import { db } from "@/config/firebase";
 import { comments } from "@/types/comments";
 import { TicketFirst } from "@/types/ticket";
@@ -40,9 +40,9 @@ const addComment = async ({
   
     await addDoc(commentsRef, newComment);
   
-    if (ticket !== null) {
-      await notifyLocalComment(ticket.title);
-    }
+    // if (ticket !== null) {
+    //   await notifyLocalComment(ticket.title);
+    // }
   };
 
    const listenToComments = (ticketId: string, setComments: (comments: comments[]) => void) => {

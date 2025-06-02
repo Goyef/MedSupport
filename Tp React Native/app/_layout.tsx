@@ -1,16 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '@/context/ctx';
 import { Stack } from 'expo-router';
-import * as Notifications from 'expo-notifications';
 
-//Configuration nécessaire pour les notifications
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
+
+//Configuration nécessaire pour les notifications / non conservé dans cette version
+// Notifications.setNotificationHandler({
+//   handleNotification: async () => ({
+//     shouldShowAlert: true,
+//     shouldPlaySound: true,
+//     shouldSetBadge: false,
+//   }),
+// });
  
 export default function RootLayout() {
   return (

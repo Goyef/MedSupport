@@ -1,51 +1,36 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import {getFirestore} from "firebase/firestore"
-import { getAuth, getReactNativePersistence, initializeAuth } from "firebase/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage"
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const isEasBuild = process.env.EAS_BUILD_PLATFORM !== undefined;
+import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
+import { getAuth, initializeAuth, getReactNativePersistence, Auth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
-  apiKey: isEasBuild
-  ? process.env.FIREBASE_API_KEY
-  : process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
-authDomain: isEasBuild
-  ? process.env.FIREBASE_AUTH_DOMAIN
-  : process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
-projectId: isEasBuild
-  ? process.env.FIREBASE_PROJECT_ID
-  : process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
-storageBucket: isEasBuild
-  ? process.env.FIREBASE_STORAGE_BUCKET
-  : process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
-messagingSenderId: isEasBuild
-  ? process.env.FIREBASE_MESSAGING_SENDER_ID
-  : process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-appId: isEasBuild
-  ? process.env.FIREBASE_APP_ID
-  : process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
-  measurementId: isEasBuild
-  ? process.env.FIREBASE_MEASUREMENT_ID
-  :process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  apiKey: "AIzaSyDSxMM5L0_BVFnqB4Rms2fpkcLZwKOl5rU",
+  authDomain: "gsb-support.firebaseapp.com",
+  projectId: "gsb-support",
+  storageBucket: "gsb-support.firebasestorage.app",
+  messagingSenderId: "469372660263",
+  appId: "1:469372660263:web:102e51eb3bea7c2ebffc02"
 };
 
-// Initialize Firebase
- const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-// Initialize Firebase Authentication and get a reference to the service
+// Initialize Firebase only once
+let app: FirebaseApp;
+if (getApps().length === 0) {
+  app = initializeApp(firebaseConfig);
+} else {
+  app = getApps()[0];
+}
 
-const auth = initializeAuth(app, {
-  persistence:getReactNativePersistence(AsyncStorage),
-})
+// Initialize Auth with proper error handling
+let auth: Auth;
+try {
+  auth = getAuth(app);
+} catch (error) {
+  // If getAuth fails, try initializeAuth
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage)
+  });
+}
 
-
-const db = getFirestore(app);
-
-export {auth, db};
-// export const auth = getAuth(app);
+export { auth };
+export const db = getFirestore(app);
+export default app
